@@ -1,0 +1,161 @@
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&display=swap');
+
+body {
+    margin: 0;
+    font-family: 'Baloo 2', cursive;
+    background: url('wallpaper.png') center/cover no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow-x: hidden;
+    color: #333;
+}
+
+
+.hidden {
+    display: none !important;
+}
+
+#start-screen,
+#review-screen {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 30px;
+    border-radius: 25px;
+    backdrop-filter: blur(12px);
+    width: 90%;
+    max-width: 500px;
+    margin: 10px auto;
+}
+
+h1,
+h2 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+}
+
+p {
+    font-size: clamp(1rem, 3vw, 1.3rem);
+    margin-bottom: 25px;
+}
+
+button {
+    padding: 12px 30px;
+    border-radius: 25px;
+    border: none;
+    font-size: clamp(1rem, 2.5vw, 1.3rem);
+    font-weight: bold;
+    background: #ff85c0;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background: #e055a5;
+}
+
+#app {
+    width: 100%;
+    max-width: 700px;
+    text-align: center;
+    margin: auto;
+}
+
+#card-container {
+    position: relative;
+    width: 100%;
+    height: 75vh;
+    max-height: 700px;
+    margin: 0 auto;
+}
+
+.card {
+    position: absolute;
+    width: 90%;
+    max-width: 600px;
+    height: 100%;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
+    touch-action: none;
+    cursor: grab;
+    transition: transform 0.5s ease, opacity 0.5s ease, border 0.3s ease;
+    background: #fff;
+    border: 5px solid transparent;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
+    font-weight: 700;
+    padding: 15px 25px;
+    border-radius: 25px;
+    transform: translate(-50%, -50%);
+    display: none;
+    pointer-events: none;
+    color: #fff;
+    text-align: center;
+    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px) brightness(0.6);
+    -webkit-backdrop-filter: blur(10px) brightness(0.6);
+}
+
+.like {
+    background: rgba(0, 255, 128, 0.3);
+    color: #fff;
+}
+
+.dislike {
+    background: rgba(255, 0, 64, 0.3);
+    color: #fff;
+}
+
+#progress {
+    margin-top: 15px;
+    font-size: clamp(0.9rem, 2vw, 1.2rem);
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+#liked-cats,
+#disliked-cats {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+#liked-cats img,
+#disliked-cats img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 768px) {
+    #card-container {
+        height: 65vh;
+    }
+}
+
+@media (max-width: 480px) {
+    #card-container {
+        height: 60vh;
+    }
+}

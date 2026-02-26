@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cat Swipe App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div id="start-screen">
+        <h1>Welcome to Cat Swipe!</h1>
+        <p>Swipe right to like 😻, swipe left to dislike 😿</p>
+        <button id="start-btn">Start</button>
+    </div>
+
+    <div id="app" class="hidden">
+        <div id="card-container">
+            <div class="card" id="card">
+                <img id="cat-image" src="" alt="Cat">
+                <div class="overlay" id="overlay"></div>
+            </div>
+        </div>
+        <div id="progress"></div>
+    </div>
+
+    <div id="review-screen" class="hidden">
+        <h2>Review Your Choices</h2>
+        <h3>Liked Cats</h3>
+        <div id="liked-cats"></div>
+        <h3>Disliked Cats</h3>
+        <div id="disliked-cats"></div>
+        <button id="restart-btn">Restart</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
