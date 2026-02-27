@@ -114,7 +114,7 @@ const App = {
         setTimeout(() => {
             this.currentIndex++;
             this.showNextCat();
-        }, 1200); // match new slower duration
+        }, 1200); 
     },
 
     showReview() {
