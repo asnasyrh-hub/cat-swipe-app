@@ -1,138 +1,136 @@
 const App = {
-    cats: [], currentIndex: 0, likedCats: [], dislikedCats: [],
-    startX: 0, currentX: 0, isDragging: false, rafId: null,
+    cats: [],
+    currentIndex: 0,
+    likedCats: [],
+    dislikedCats: [],
+    startX: 0,
+    isDragging: false,
 
     init() {
-        // generate 10 random cats
-        for (let i = 1; i <= 10; i++) this.cats.push(`https://cataas.com/cat?random=${i}`);
-        this.cacheDOM(); this.bindEvents();
+        this.generateCats();
+        this.cacheDOM();
+        this.bindEvents();
+    },
+
+    generateCats() {
+        for (let i = 1; i <= 10; i++) {
+            this.cats.push(`https://cataas.com/cat?random=${i}`);
+        }
     },
 
     cacheDOM() {
         this.startScreen = document.getElementById("start-screen");
         this.startBtn = document.getElementById("start-btn");
         this.app = document.getElementById("app");
-        this.card = document.getElementById("card");
-        this.image = document.getElementById("cat-image");
-        this.overlay = document.getElementById("overlay");
+        this.cardTop = document.getElementById("card-top");
+        this.imgTop = document.getElementById("img-top");
+        this.overlayTop = document.getElementById("overlay-top");
         this.progress = document.getElementById("progress");
         this.reviewScreen = document.getElementById("review-screen");
+        this.restartBtn = document.getElementById("restart-btn");
         this.likedContainer = document.getElementById("liked-cats");
         this.dislikedContainer = document.getElementById("disliked-cats");
-        this.restartBtn = document.getElementById("restart-btn");
     },
 
     bindEvents() {
         this.startBtn.addEventListener("click", () => this.startApp());
         this.restartBtn.addEventListener("click", () => this.restartApp());
-        this.card.addEventListener("pointerdown", (e) => this.dragStart(e));
-        this.card.addEventListener("pointermove", (e) => this.dragMove(e));
-        this.card.addEventListener("pointerup", () => this.dragEnd());
-        this.card.addEventListener("pointercancel", () => this.dragEnd());
+
+        this.cardTop.addEventListener("pointerdown", (e) => this.onPointerDown(e));
+        this.cardTop.addEventListener("pointermove", (e) => this.onPointerMove(e));
+        this.cardTop.addEventListener("pointerup", (e) => this.onPointerUp(e));
+        this.cardTop.addEventListener("pointerleave", (e) => this.onPointerUp(e));
     },
 
     startApp() {
         this.startScreen.classList.add("hidden");
         this.app.classList.remove("hidden");
-        this.showCat();
+        this.showNextCat();
     },
 
-    showCat() {
-        if (this.currentIndex < this.cats.length) {
-            this.image.src = this.cats[this.currentIndex];
-            this.progress.innerText = `Kitty ${this.currentIndex + 1} of ${this.cats.length}`;
-            this.overlay.style.display = "none";
-            this.card.style.transform = ""; this.card.style.opacity = 1;
-        } else this.showReview();
+    showNextCat() {
+        if (this.currentIndex >= this.cats.length) {
+            this.showReview();
+            return;
+        }
+
+        this.imgTop.src = this.cats[this.currentIndex];
+        this.cardTop.style.opacity = "1";
+        this.cardTop.style.transform = "translateX(0) rotate(0)";
+        this.cardTop.style.borderColor = "transparent";
+        this.overlayTop.style.display = "none";
+
+        this.progress.innerText = `Cat ${this.currentIndex + 1} of ${this.cats.length}`;
     },
 
-    dragStart(e) {
+    onPointerDown(e) {
         this.startX = e.clientX;
         this.isDragging = true;
-        this.card.style.transition = "none";
+        this.cardTop.style.transition = "none";
     },
 
-    dragMove(e) {
+    onPointerMove(e) {
         if (!this.isDragging) return;
-        this.currentX = e.clientX - this.startX;
-        const max = window.innerWidth * 0.7;
-        if (this.currentX > max) this.currentX = max;
-        if (this.currentX < -max) this.currentX = -max;
-        this.showOverlay();
+        const moveX = e.clientX - this.startX;
+        this.cardTop.style.transform = `translateX(${moveX}px) rotate(${moveX / 15}deg)`;
+
+        if (moveX > 0) this.cardTop.style.borderColor = "limegreen";
+        else if (moveX < 0) this.cardTop.style.borderColor = "red";
+        else this.cardTop.style.borderColor = "transparent";
     },
 
-    showOverlay() {
-        this.rafId = requestAnimationFrame(() => {
-            this.card.style.transform = `translateX(${this.currentX}px) rotate(${this.currentX * 0.04}deg)`;
-
-            if (this.currentX > 50) {
-                this.overlay.innerText = "Yaaas! 😻";
-                this.overlay.className = "overlay like";
-                this.overlay.style.display = "block";
-                this.card.style.borderColor = "#00c853";
-            }
-            else if (this.currentX < -50) {
-                this.overlay.innerText = "Nahh! 🙀";
-                this.overlay.className = "overlay dislike";
-                this.overlay.style.display = "block";
-                this.card.style.borderColor = "#ff1744";
-            }
-            else {
-                this.overlay.style.display = "none";
-                this.card.style.borderColor = "transparent";
-            }
-        });
-    },
-
-    dragEnd() {
-        cancelAnimationFrame(this.rafId);
+    onPointerUp(e) {
+        if (!this.isDragging) return;
         this.isDragging = false;
-        this.card.style.transition = "transform 0.5s ease, opacity 0.5s ease, border 0.3s ease";
 
-        const threshold = 120;
-        if (this.currentX > threshold) {
-            this.animateCard('right');
+        const diff = e.clientX - this.startX;
+        const trigger = 80;
+
+        this.cardTop.style.transition = "transform 0.8s ease, opacity 0.8s ease, border 0.3s ease";
+
+        if (diff > trigger) {
+            this.swipe("right");
             this.likedCats.push(this.cats[this.currentIndex]);
-        }
-        else if (this.currentX < -threshold) {
-            this.animateCard('left');
+        } else if (diff < -trigger) {
+            this.swipe("left");
             this.dislikedCats.push(this.cats[this.currentIndex]);
+        } else {
+            this.cardTop.style.transform = "translateX(0) rotate(0)";
+            this.cardTop.style.borderColor = "transparent";
         }
-        else {
-            this.card.style.transform = "";
-            this.overlay.style.display = "none";
-            this.card.style.borderColor = "transparent";
-        }
-        this.currentX = 0;
     },
 
-    animateCard(dir) {
-        const offX = dir === 'right' ? window.innerWidth * 0.8 : -window.innerWidth * 0.8;
-        this.card.style.transform = `translateX(${offX}px) rotate(${dir === 'right' ? 25 : -25}deg)`;
-        this.card.style.opacity = 0;
-        this.overlay.style.opacity = 0;
+    swipe(direction) {
+        const offScreen = direction === "right" ? window.innerWidth : -window.innerWidth;
+
+        this.overlayTop.style.display = "block";
+        this.overlayTop.innerText = direction === "right" ? "Yass 😻" : "Nahh 😿";
+        this.overlayTop.className = direction === "right" ? "overlay like" : "overlay dislike";
+
+        this.cardTop.style.transition = "transform 1.2s ease, opacity 1.2s ease, border 0.3s ease"; 
+        this.cardTop.style.transform = `translateX(${offScreen}px) rotate(${direction === "right" ? 30 : -30}deg)`;
+        this.cardTop.style.opacity = "0";
 
         setTimeout(() => {
             this.currentIndex++;
-            this.card.style.transition = "none";
-            this.card.style.transform = "";
-            this.card.style.opacity = 1;
-            this.overlay.style.display = "none";
-            this.showCat();
-        }, 300);
+            this.showNextCat();
+        }, 1200); // match new slower duration
     },
 
     showReview() {
         this.app.classList.add("hidden");
         this.reviewScreen.classList.remove("hidden");
+
         this.likedContainer.innerHTML = "";
-        this.likedCats.forEach(url => {
+        this.dislikedContainer.innerHTML = "";
+
+        this.likedCats.forEach((url) => {
             const img = document.createElement("img");
             img.src = url;
             this.likedContainer.appendChild(img);
         });
-        this.dislikedContainer.innerHTML = "";
-        this.dislikedCats.forEach(url => {
+
+        this.dislikedCats.forEach((url) => {
             const img = document.createElement("img");
             img.src = url;
             this.dislikedContainer.appendChild(img);
@@ -140,7 +138,10 @@ const App = {
     },
 
     restartApp() {
-        this.currentIndex = 0; this.likedCats = []; this.dislikedCats = [];
+        this.currentIndex = 0;
+        this.likedCats = [];
+        this.dislikedCats = [];
+
         this.reviewScreen.classList.add("hidden");
         this.startScreen.classList.remove("hidden");
     }
